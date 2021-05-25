@@ -82,7 +82,7 @@ static bool urcTokenWoPrefix( const CellularContext_t * pContext,
 static _atRespType_t _getMsgType( const CellularContext_t * pContext,
                                   const char * pLine,
                                   const char * pRespPrefix );
-static CellularCommInterfaceError_t _Cellular_PktRxCallBack( void * pUserData,
+static CellularCommInterfaceError_t _Cellular_PktRxCallBack( const void * pUserData,
                                                              CellularCommInterfaceHandle_t commInterfaceHandle );
 static char * _handleLeftoverBuffer( CellularContext_t * pContext );
 static char * _Cellular_ReadLine( CellularContext_t * pContext,
@@ -111,7 +111,7 @@ static void _PktioInitProcessReadThreadStatus( CellularContext_t * pContext );
 static uint32_t _convertCharPtrDistance( const char * pEndPtr,
                                          const char * pStartPtr )
 {
-    int32_t ptrDistance = ( pEndPtr - pStartPtr );
+    int32_t ptrDistance = ( int32_t )( pEndPtr - pStartPtr );
     uint32_t retValue = 0;
 
     if( ( ptrDistance >= 0 ) && ( ptrDistance < INT32_MAX ) )
@@ -175,7 +175,7 @@ static void _saveATData( char * pLine,
                          CellularATCommandResponse_t * pResp )
 {
     CellularLogDebug( "Save [%s] %d AT data to pResp", pLine, strlen( pLine ) );
-    _saveData( pLine, pResp, strlen( pLine ) + 1U );
+    _saveData( pLine, pResp, ( uint32_t ) ( strlen( pLine ) + 1U ) );
 }
 
 /*-----------------------------------------------------------*/
@@ -441,7 +441,7 @@ static _atRespType_t _getMsgType( const CellularContext_t * pContext,
 /*-----------------------------------------------------------*/
 /* Cellular comm interface callback prototype. */
 /* coverity[misra_c_2012_rule_8_13_violation] */
-static CellularCommInterfaceError_t _Cellular_PktRxCallBack( void * pUserData,
+static CellularCommInterfaceError_t _Cellular_PktRxCallBack( const void * pUserData,
                                                              CellularCommInterfaceHandle_t commInterfaceHandle )
 {
     const CellularContext_t * pContext = ( CellularContext_t * ) pUserData;
@@ -515,7 +515,7 @@ static char * _Cellular_ReadLine( CellularContext_t * pContext,
     char * pRead = NULL;  /* pRead is the first empty ptr in the Buffer for comm intf to read. */
     uint32_t bytesRead = 0;
     uint32_t partialDataRead = pContext->partialDataRcvdLen;
-    int32_t bufferEmptyLength = PKTIO_READ_BUFFER_SIZE;
+    int32_t bufferEmptyLength = ( int32_t )PKTIO_READ_BUFFER_SIZE;
 
     pAtBuf = pContext->pktioReadBuf;
     pRead = pContext->pktioReadBuf;
@@ -529,7 +529,7 @@ static char * _Cellular_ReadLine( CellularContext_t * pContext,
         ( pContext->partialDataRcvdLen != 0U ) && ( pAtResp == NULL ) )
     {
         pRead = _handleLeftoverBuffer( pContext );
-        bufferEmptyLength = PKTIO_READ_BUFFER_SIZE - pContext->partialDataRcvdLen;
+        bufferEmptyLength = ( ( int32_t )PKTIO_READ_BUFFER_SIZE - ( int32_t )pContext->partialDataRcvdLen );
     }
     else
     {
@@ -538,15 +538,15 @@ static char * _Cellular_ReadLine( CellularContext_t * pContext,
             /* There are still valid data before pPktioReadPtr. */
             pRead = &pContext->pPktioReadPtr[ pContext->partialDataRcvdLen ];
             pAtBuf = pContext->pPktioReadPtr;
-            bufferEmptyLength = PKTIO_READ_BUFFER_SIZE -
-                                pContext->partialDataRcvdLen - _convertCharPtrDistance( pContext->pPktioReadPtr, pContext->pktioReadBuf );
+            bufferEmptyLength = ( ( int32_t )PKTIO_READ_BUFFER_SIZE -
+                                ( int32_t )pContext->partialDataRcvdLen - ( int32_t )_convertCharPtrDistance( pContext->pPktioReadPtr, pContext->pktioReadBuf ) );
         }
         else
         {
             /* There are valid data need to be handled with length pContext->partialDataRcvdLen. */
             pRead = &pContext->pktioReadBuf[ pContext->partialDataRcvdLen ];
             pAtBuf = pContext->pktioReadBuf;
-            bufferEmptyLength = PKTIO_READ_BUFFER_SIZE - pContext->partialDataRcvdLen;
+            bufferEmptyLength = ( ( int32_t )PKTIO_READ_BUFFER_SIZE - ( int32_t )pContext->partialDataRcvdLen );
         }
     }
 
@@ -859,7 +859,7 @@ static bool _getNextLine( CellularContext_t * pContext,
     bool keepProcess = true;
 
     /* Find other responses or urcs which need to be processed in this read buffer. */
-    stringLength = strnlen( *ppLine, *pBytesRead );
+    stringLength = ( uint32_t )strnlen( *ppLine, *pBytesRead );
 
     /* Advanced 1 bytes to read next Line. */
     if( *pBytesRead >= ( stringLength + 1U ) )
@@ -1176,7 +1176,7 @@ CellularPktStatus_t _Cellular_PktioSendAtCmd( CellularContext_t * pContext,
     }
     else
     {
-        cmdLen = strlen( pAtCmd );
+        cmdLen = ( uint32_t )strlen( pAtCmd );
 
         if( cmdLen > PKTIO_WRITE_BUFFER_SIZE )
         {
@@ -1205,7 +1205,7 @@ CellularPktStatus_t _Cellular_PktioSendAtCmd( CellularContext_t * pContext,
 /*-----------------------------------------------------------*/
 
 /* Sends data to the modem. */
-uint32_t _Cellular_PktioSendData( CellularContext_t * pContext,
+uint32_t _Cellular_PktioSendData( const CellularContext_t * pContext,
                                   const uint8_t * pData,
                                   uint32_t dataLen )
 {
