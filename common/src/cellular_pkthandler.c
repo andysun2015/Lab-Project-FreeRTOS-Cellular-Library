@@ -76,7 +76,7 @@ static int _sortCompareFunc( const void * pElem1Ptr,
 static void _Cellular_ProcessGenericUrc( const CellularContext_t * pContext,
                                          const char * pInputLine );
 static CellularPktStatus_t _atParseGetHandler( CellularContext_t * pContext,
-                                               char * pTokenPtr,
+                                               const char * pTokenPtr,
                                                char * pSavePtr );
 
 /*-----------------------------------------------------------*/
@@ -373,8 +373,8 @@ static int _searchCompareFunc( const void * pInputToken,
     int compareValue = 0;
     const char * pToken = ( const char * ) pInputToken;
     const CellularAtParseTokenMap_t * pBasePtr = ( const CellularAtParseTokenMap_t * ) pBase;
-    uint32_t tokenLen = strlen( pInputToken );
-    uint32_t strLen = strlen( pBasePtr->pStrValue );
+    uint32_t tokenLen = ( uint32_t )strlen( pInputToken );
+    uint32_t strLen = ( uint32_t )strlen( pBasePtr->pStrValue );
 
     compareValue = strncmp( pToken,
                             pBasePtr->pStrValue,
@@ -415,8 +415,8 @@ static int _sortCompareFunc( const void * pElem1Ptr,
     int compareValue = 0;
     const CellularAtParseTokenMap_t * pElement1Ptr = ( const CellularAtParseTokenMap_t * ) pElem1Ptr;
     const CellularAtParseTokenMap_t * pElement2Ptr = ( const CellularAtParseTokenMap_t * ) pElem2Ptr;
-    uint32_t element1PtrLen = strlen( pElement1Ptr->pStrValue );
-    uint32_t element2PtrLen = strlen( pElement2Ptr->pStrValue );
+    uint32_t element1PtrLen = ( uint32_t )strlen( pElement1Ptr->pStrValue );
+    uint32_t element2PtrLen = ( uint32_t )strlen( pElement2Ptr->pStrValue );
 
     compareValue = strncmp( pElement1Ptr->pStrValue,
                             pElement2Ptr->pStrValue,
@@ -450,7 +450,7 @@ static void _Cellular_ProcessGenericUrc( const CellularContext_t * pContext,
 /*-----------------------------------------------------------*/
 
 static CellularPktStatus_t _atParseGetHandler( CellularContext_t * pContext,
-                                               char * pTokenPtr,
+                                               const char * pTokenPtr,
                                                char * pSavePtr )
 {
     /* Now get the handler function based on the token. */
