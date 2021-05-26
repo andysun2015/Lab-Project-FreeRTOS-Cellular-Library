@@ -662,7 +662,7 @@ CellularATError_t Cellular_ATIsStrDigit( const char * pString,
     {
         *pResult = true;
 
-        while( ( pTempString != NULL ) && ( *pTempString != '\0' ) )
+        while( ( *pTempString != '\0' ) )
         {
             /* isdigit is a standard library function and we cannot control it. */
             /* coverity[misra_c_2012_directive_4_6_violation] */
