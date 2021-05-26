@@ -49,8 +49,11 @@ typedef enum _atRespType
  * @param[in] pContext The opaque cellular context pointer created by Cellular_Init.
  * @param[in] atRespType The received packet type.
  * @param[in] pBuf The input data buffer from packet IO.
+ *
+ * @return CELLULAR_PKT_STATUS_OK if the operation is successful, otherwise an error
+ * code indicating the cause of the error.
  */
-typedef void ( * _pPktioHandlePacketCallback_t ) ( CellularContext_t * pContext,
+typedef CellularPktStatus_t ( * _pPktioHandlePacketCallback_t ) ( CellularContext_t * pContext,
                                                    _atRespType_t atRespType,
                                                    const void * pBuffer );
 

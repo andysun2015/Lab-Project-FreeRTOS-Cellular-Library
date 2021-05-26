@@ -254,31 +254,28 @@ static CellularError_t libOpen( CellularContext_t * pContext )
 
     PlatformMutex_Lock( &pContext->libStatusMutex );
 
-    if( cellularStatus == CELLULAR_SUCCESS )
+    ( CellularPktStatus_t ) _Cellular_AtParseInit( pContext );
+    _Cellular_LockAtDataMutex( pContext );
+    _Cellular_InitAtData( pContext, 0 );
+    _Cellular_UnlockAtDataMutex( pContext );
+    _Cellular_SetShutdownCallback( pContext, _shutdownCallback );
+    pktStatus = _Cellular_PktHandlerInit( pContext );
+
+    if( pktStatus == CELLULAR_PKT_STATUS_OK )
     {
-        _Cellular_AtParseInit( pContext );
-        _Cellular_LockAtDataMutex( pContext );
-        _Cellular_InitAtData( pContext, 0 );
-        _Cellular_UnlockAtDataMutex( pContext );
-        _Cellular_SetShutdownCallback( pContext, _shutdownCallback );
-        pktStatus = _Cellular_PktHandlerInit( pContext );
-
-        if( pktStatus == CELLULAR_PKT_STATUS_OK )
-        {
-            pktStatus = _Cellular_PktioInit( pContext, _Cellular_HandlePacket );
-
-            if( pktStatus != CELLULAR_PKT_STATUS_OK )
-            {
-                CellularLogError( "pktio failed to initialize" );
-                _Cellular_PktioShutdown( pContext );
-                _Cellular_PktHandlerCleanup( pContext );
-            }
-        }
+        pktStatus = _Cellular_PktioInit( pContext, _Cellular_HandlePacket );
 
         if( pktStatus != CELLULAR_PKT_STATUS_OK )
         {
-            cellularStatus = _Cellular_TranslatePktStatus( pktStatus );
+            CellularLogError( "pktio failed to initialize" );
+            _Cellular_PktioShutdown( pContext );
+            _Cellular_PktHandlerCleanup( pContext );
         }
+    }
+
+    if( pktStatus != CELLULAR_PKT_STATUS_OK )
+    {
+        cellularStatus = _Cellular_TranslatePktStatus( pktStatus );
     }
 
     if( cellularStatus == CELLULAR_SUCCESS )
@@ -630,7 +627,8 @@ CellularError_t _Cellular_CreateSocketData( CellularContext_t * pContext,
 }
 
 /*-----------------------------------------------------------*/
-
+/* Cellular common API prototype. */
+/* coverity[misra_c_2012_rule_8_7_violation] */
 CellularError_t _Cellular_RemoveSocketData( CellularContext_t * pContext,
                                             CellularSocketHandle_t socketHandle )
 {
@@ -795,7 +793,8 @@ CellularError_t _Cellular_ConvertCsqSignalBer( int16_t csqBer,
 }
 
 /*-----------------------------------------------------------*/
-
+/* Cellular common API prototype. */
+/* coverity[misra_c_2012_rule_8_7_violation] */
 CellularError_t _Cellular_GetModuleContext( const CellularContext_t * pContext,
                                             void ** ppModuleContext )
 {
@@ -814,7 +813,8 @@ CellularError_t _Cellular_GetModuleContext( const CellularContext_t * pContext,
 }
 
 /*-----------------------------------------------------------*/
-
+/* Cellular common API prototype. */
+/* coverity[misra_c_2012_rule_8_7_violation] */
 CellularError_t _Cellular_ComputeSignalBars( CellularRat_t rat,
                                              CellularSignalInfo_t * pSignalInfo )
 {
@@ -847,7 +847,8 @@ CellularError_t _Cellular_ComputeSignalBars( CellularRat_t rat,
 }
 
 /*-----------------------------------------------------------*/
-
+/* Cellular common API prototype. */
+/* coverity[misra_c_2012_rule_8_7_violation] */
 CellularError_t _Cellular_GetCurrentRat( CellularContext_t * pContext,
                                          CellularRat_t * pRat )
 {
